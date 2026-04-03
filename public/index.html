@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Library</title>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="#" class="brand-logo center">Book Library</a>
+    </div>
+  </nav>
+
+  <div class="container center-align">
+    <h3 class="page-title">Popular Books</h3>
+    <p class="grey-text text-darken-1">
+      This application displays book details from MongoDB using a Node.js and Express backend.
+    </p>
+
+    <div class="row">
+      <a class="waves-effect waves-light btn modal-trigger" href="#book-modal">
+        Open Info
+      </a>
+    </div>
+
+    <div class="row" id="card-section"></div>
+  </div>
+
+  <div id="book-modal" class="modal">
+    <div class="modal-content" id="modal-content">
+      <h4>Welcome</h4>
+      <p>Click any book card to view more details.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+
+  <footer class="page-footer teal">
+    <div class="container center-align">
+      <p>Week 4 Practical - Book Database Project</p>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="/js/script.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modals = document.querySelectorAll('.modal');
+      M.Modal.init(modals);
+    });
+  </script>
+</body>
+</html>
