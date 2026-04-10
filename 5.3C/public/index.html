@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books Catalogue</title>
+</head>
+<body>
+  <h1>Books Catalogue developed by s225765963</h1>
+
+  <button id="btn">Get all books</button>
+  <div id="output"></div>
+
+  <script>
+    const btn = document.getElementById('btn');
+    const output = document.getElementById('output');
+
+    btn.addEventListener('click', async () => {
+      const res = await fetch('/api/books');
+      const books = await res.json();
+      console.log(books);
+
+      output.innerHTML = '';
+
+      books.forEach(book => {
+        const p = document.createElement('p');
+        p.textContent = `${book.title} ${book.price} AUD`;
+
+        p.addEventListener('click', async () => {
+          const res = await fetch(`/api/books/${book._id}`);
+          const data = await res.json();
+
+          output.innerHTML = `
+            <h3>${data.title}</h3>
+            <p>${data.author}</p>
+            <p>${data.year}</p>
+            <p>${data.genre}</p>
+            <p>${data.summary}</p>
+            <p>${data.price} AUD</p>
+          `;
+        });
+
+        output.appendChild(p);
+      });
+    });
+  </script>
+</body>
+</html>
