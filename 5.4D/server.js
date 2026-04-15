@@ -11,15 +11,13 @@ mongoose.connection.on('connected', () => {
   console.log('Connected to MongoDB');
 });
 
-// Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
+
 const booksRoute = require('./routes/books.routes');
 app.use('/api/books', booksRoute);
 
-// Integrity route
 app.get('/api/integrity-check42', (req, res) => {
   res.status(204).send();
 });
