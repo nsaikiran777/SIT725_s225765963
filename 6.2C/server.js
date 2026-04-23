@@ -2,6 +2,10 @@ var express = require("express")
 const path = require('path');
 var app = express()
 var port = process.env.PORT || 3002;
+function multiply(a, b) {
+  return a * b;
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/multiply', (req, res) => {
   const a = parseFloat(req.query.a);
@@ -9,7 +13,7 @@ app.get('/multiply', (req, res) => {
   if (isNaN(a) || isNaN(b)) {
     return res.status(400).send("Invalid input");
   }
-  const product = a * b;
+  const product = multiply(a, b);
   
   
   res.send(`The product of ${a} and ${b} is: ${product}`);
