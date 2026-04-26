@@ -78,7 +78,6 @@ async function test({ id, name, method, path, expected, body, tags }) {
     }
   });
 }
-
 function makeValidBook(id) {
   return {
     id,
@@ -90,7 +89,6 @@ function makeValidBook(id) {
     price: "29.99"
   };
 }
-
 function makeValidUpdate() {
   return {
     title: "Updated Clean Code Book",
@@ -101,14 +99,11 @@ function makeValidUpdate() {
     price: "35.50"
   };
 }
-
 async function run() {
   const uniqueId = `b${Date.now()}`;
   logHeader(uniqueId);
-
   const createPath = API_BASE;
   const updatePath = (id) => `${API_BASE}/${id}`;
-
   await test({
     id: "T01",
     name: "Valid create",
@@ -118,7 +113,6 @@ async function run() {
     body: makeValidBook(uniqueId),
     tags: []
   });
-
   await test({
     id: "T02",
     name: "Duplicate ID",
@@ -128,7 +122,6 @@ async function run() {
     body: makeValidBook(uniqueId),
     tags: ["CREATE_FAIL"]
   });
-
   await test({
     id: "T03",
     name: "Immutable ID on update",
@@ -138,7 +131,6 @@ async function run() {
     body: { ...makeValidUpdate(), id: "b999" },
     tags: ["UPDATE_FAIL", "IMMUTABLE"]
   });
-
   await test({
     id: "T04",
     name: "Unknown field CREATE",
@@ -148,7 +140,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 1}`), hack: true },
     tags: ["CREATE_FAIL", "UNKNOWN_CREATE"]
   });
-
   await test({
     id: "T05",
     name: "Unknown field UPDATE",
@@ -158,7 +149,6 @@ async function run() {
     body: { ...makeValidUpdate(), hack: true },
     tags: ["UPDATE_FAIL", "UNKNOWN_UPDATE"]
   });
-
   await test({
     id: "T06",
     name: "Missing title on create",
@@ -168,7 +158,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 2}`), title: "" },
     tags: ["CREATE_FAIL", "REQUIRED"]
   });
-
   await test({
     id: "T07",
     name: "Missing author on update",
@@ -178,7 +167,6 @@ async function run() {
     body: { ...makeValidUpdate(), author: "" },
     tags: ["UPDATE_FAIL", "REQUIRED"]
   });
-
   await test({
     id: "T08",
     name: "Invalid year type create",
@@ -188,7 +176,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 3}`), year: "abc" },
     tags: ["CREATE_FAIL", "TYPE"]
   });
-
   await test({
     id: "T09",
     name: "Invalid price type update",
@@ -198,7 +185,6 @@ async function run() {
     body: { ...makeValidUpdate(), price: "not-a-number" },
     tags: ["UPDATE_FAIL", "TYPE"]
   });
-
   await test({
     id: "T10",
     name: "Year below minimum",
@@ -208,7 +194,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 4}`), year: 1400 },
     tags: ["CREATE_FAIL", "BOUNDARY"]
   });
-
   await test({
     id: "T11",
     name: "Negative price update",
@@ -218,7 +203,6 @@ async function run() {
     body: { ...makeValidUpdate(), price: "-5" },
     tags: ["UPDATE_FAIL", "BOUNDARY"]
   });
-
   await test({
     id: "T12",
     name: "Short title create",
@@ -228,7 +212,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 5}`), title: "Hi" },
     tags: ["CREATE_FAIL", "LENGTH"]
   });
-
   await test({
     id: "T13",
     name: "Long summary update",
@@ -238,7 +221,6 @@ async function run() {
     body: { ...makeValidUpdate(), summary: "a".repeat(501) },
     tags: ["UPDATE_FAIL", "LENGTH"]
   });
-
   await test({
     id: "T14",
     name: "Future year create",
@@ -248,7 +230,6 @@ async function run() {
     body: { ...makeValidBook(`b${Date.now() + 6}`), year: new Date().getFullYear() + 1 },
     tags: ["CREATE_FAIL", "TEMPORAL"]
   });
-
   await test({
     id: "T15",
     name: "Future year update",
@@ -258,7 +239,6 @@ async function run() {
     body: { ...makeValidUpdate(), year: new Date().getFullYear() + 2 },
     tags: ["UPDATE_FAIL", "TEMPORAL"]
   });
-
   await test({
     id: "T16",
     name: "Valid update",
@@ -268,7 +248,6 @@ async function run() {
     body: makeValidUpdate(),
     tags: []
   });
-
   await test({
     id: "T17",
     name: "Update non-existing record",
@@ -278,6 +257,119 @@ async function run() {
     body: makeValidUpdate(),
     tags: []
   });
+await test({
+  id: "T18",
+  name: "ID exceeds max length create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook("B" + "x".repeat(30)), },  
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+
+await test({
+  id: "T19",
+  name: "Title exceeds max length create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 7}`), title: "T".repeat(101) },
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+await test({
+  id: "T20",
+  name: "Author too short create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 8}`), author: "AB" },
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+await test({
+  id: "T21",
+  name: "Author exceeds max length create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 9}`), author: "A".repeat(61) },
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+await test({
+  id: "T22",
+  name: "Missing genre create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 10}`), genre: "" },
+  tags: ["CREATE_FAIL", "REQUIRED"]
+});
+await test({
+  id: "T23",
+  name: "Genre too short create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 11}`), genre: "SF" },
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+
+await test({
+  id: "T24",
+  name: "Genre exceeds max length create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 12}`), genre: "G".repeat(41) },
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+
+await test({
+  id: "T25",
+  name: "Missing summary create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 13}`), summary: "" },
+  tags: ["CREATE_FAIL", "REQUIRED"]
+});
+await test({
+  id: "T26",
+  name: "Summary too short create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 14}`), summary: "Too short" },  // 9 chars
+  tags: ["CREATE_FAIL", "LENGTH"]
+});
+await test({
+  id: "T27",
+  name: "Price above maximum create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: { ...makeValidBook(`b${Date.now() + 15}`), price: "1001" },
+  tags: ["CREATE_FAIL", "BOUNDARY"]
+});
+
+await test({
+  id: "T28",
+  name: "Attempt to update immutable _id field",
+  method: "PUT",
+  path: updatePath(uniqueId),
+  expected: 400,
+  body: { ...makeValidUpdate(), _id: "fakeMongoId" },
+  tags: ["UPDATE_FAIL", "IMMUTABLE"]
+});
+
+await test({
+  id: "T29",
+  name: "Attempt to update immutable created At field",
+  method: "PUT",
+  path: updatePath(uniqueId),
+  expected: 400,
+  body: { ...makeValidUpdate(), createdAt: "2020-01-01T00:00:00Z" },
+  tags: ["UPDATE_FAIL", "IMMUTABLE"]
+});
 
 const pass = logSummary();
   logCoverage();
