@@ -312,7 +312,6 @@ await test({
   body: { ...makeValidBook(`b${Date.now() + 11}`), genre: "SF" },
   tags: ["CREATE_FAIL", "LENGTH"]
 });
-
 await test({
   id: "T24",
   name: "Genre exceeds max length create",
@@ -322,7 +321,6 @@ await test({
   body: { ...makeValidBook(`b${Date.now() + 12}`), genre: "G".repeat(41) },
   tags: ["CREATE_FAIL", "LENGTH"]
 });
-
 await test({
   id: "T25",
   name: "Missing summary create",
@@ -350,7 +348,6 @@ await test({
   body: { ...makeValidBook(`b${Date.now() + 15}`), price: "1001" },
   tags: ["CREATE_FAIL", "BOUNDARY"]
 });
-
 await test({
   id: "T28",
   name: "Attempt to update immutable _id field",
@@ -360,7 +357,6 @@ await test({
   body: { ...makeValidUpdate(), _id: "fakeMongoId" },
   tags: ["UPDATE_FAIL", "IMMUTABLE"]
 });
-
 await test({
   id: "T29",
   name: "Attempt to update immutable created At field",
@@ -370,13 +366,38 @@ await test({
   body: { ...makeValidUpdate(), createdAt: "2020-01-01T00:00:00Z" },
   tags: ["UPDATE_FAIL", "IMMUTABLE"]
 });
-
+await test({
+  id: "T30",
+  name: "Missing year on create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: (() => { const b = makeValidBook(`b${Date.now()+16}`); delete b.year; return b; })(),
+  tags: ["CREATE_FAIL", "REQUIRED"]
+});
+await test({
+  id: "T31",
+  name: "Missing price on create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: (() => { const b = makeValidBook(`b${Date.now()+17}`); delete b.price; return b; })(),
+  tags: ["CREATE_FAIL", "REQUIRED"]
+});
+await test({
+  id: "T32",
+  name: "Missing id on create",
+  method: "POST",
+  path: createPath,
+  expected: 400,
+  body: (() => { const b = makeValidBook(`b${Date.now()+18}`); delete b.id; return b; })(),
+  tags: ["CREATE_FAIL", "REQUIRED"]
+});
 const pass = logSummary();
   logCoverage();
 
   process.exitCode = pass ? 0 : 1;
 }
-
 run().catch(err => {
   console.error("ERROR", err);
   process.exitCode = 2;
