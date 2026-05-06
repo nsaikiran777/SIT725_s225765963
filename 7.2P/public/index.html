@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket Demo for 7.2P Task</title>
+</head>
+<style>
+    body { font-family: Arial, sans-serif; text-align: Left; margin-top: 80px; }
+    #prime { font-size: 5rem; color: #4a90d9; font-weight: bold; }
+    #history { color: #888; font-size: 1rem; margin-top: 20px; }
+  </style>
+<body>
+  <h1>Random Prime Number from Server:</h1>
+  <div id="prime">Waiting...</div>
+
+  <!-- Load socket.io BEFORE scripts.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>
